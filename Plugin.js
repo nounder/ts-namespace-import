@@ -6,7 +6,7 @@ const tsutils = require("tsutils")
 
 /**
  * @typedef {Object} PluginOptions
- * @property {readonly string[]} paths
+ * @property {readonly string[]} [paths]
  * @property {boolean} [ignoreNamedExport]
  * @property {"PascalCase" | "camelCase"} [nameTransform]
  * @property {boolean} [namespaceNamedExports]
@@ -128,9 +128,16 @@ function getCodeFixActionByName(selfPath, start, end, info) {
 function getModulePathsToImport(options, project) {
   const currentDir = project.getCurrentDirectory()
 
-  const modulePaths = options.paths.flatMap((dirPath) => {
-    return project.readDirectory(path.resolve(currentDir, dirPath), [".ts", ".js"])
-  })
+  let modulePaths
+  if (options.paths && options.paths.length > 0) {
+    // Use specified paths
+    modulePaths = options.paths.flatMap((dirPath) => {
+      return project.readDirectory(path.resolve(currentDir, dirPath), [".ts", ".js"])
+    })
+  } else {
+    // Default: scan entire project directory
+    modulePaths = project.readDirectory(currentDir, [".ts", ".js"], undefined, undefined, 10)
+  }
 
   const filteredPaths = modulePaths.filter((filePath) => {
     const basename = getFileNameWithoutExt(filePath)
