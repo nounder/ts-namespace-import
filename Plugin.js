@@ -131,7 +131,12 @@ function getModulePathsToImport(options, project) {
     return project.readDirectory(path.resolve(currentDir, dirPath), [".ts", ".js"])
   })
 
-  return [...new Set(modulePaths)]
+  const filteredPaths = modulePaths.filter((filePath) => {
+    const basename = getFileNameWithoutExt(filePath)
+    return !basename.includes('.')
+  })
+
+  return [...new Set(filteredPaths)]
 }
 
 /**
@@ -160,15 +165,54 @@ function getFilePathWithoutExt(filePath) {
  */
 function getModuleSpceifier(selfPath, modulePath, project) {
   const compilerOptions = project.getCompilerOptions()
+  const program = project.getLanguageService().getProgram()
+  const importingSourceFile = program?.getSourceFile(selfPath)
+  
+  // Use TypeScript's internal API with the project's actual host
+  if (importingSourceFile && project.projectService?.host) {
+    try {
+      const host = project.projectService.host
+      const moduleSpecifier = ts.moduleSpecifiers.getModuleSpecifier(
+        compilerOptions,
+        importingSourceFile,
+        selfPath,
+        modulePath,
+        host
+      )
+      return moduleSpecifier
+    } catch (e) {
+      // If the internal API fails, we need a fallback
+    }
+  }
 
+  // Simple fallback that respects importModuleSpecifierEnding
   let specifier
   if (compilerOptions.baseUrl) {
     specifier = path.posix.relative(compilerOptions.baseUrl, modulePath)
   } else {
-    specifier = "./" + path.posix.relative(path.dirname(selfPath), modulePath)
+    const selfDir = path.dirname(selfPath)
+    const relativePath = path.relative(selfDir, modulePath)
+    specifier = relativePath.startsWith('.') ? relativePath : './' + relativePath
+    // Convert Windows paths to posix for import statements
+    specifier = specifier.replace(/\\/g, '/')
   }
 
-  return getFilePathWithoutExt(specifier)
+  // Remove the original extension
+  specifier = getFilePathWithoutExt(specifier)
+  
+  // Apply importModuleSpecifierEnding if specified
+  if (compilerOptions.importModuleSpecifierEnding === "js") {
+    // Use the actual file extension when importModuleSpecifierEnding is "js"
+    const originalExt = path.extname(modulePath)
+    specifier += originalExt
+  } else if (compilerOptions.importModuleSpecifierEnding === "minimal") {
+    // Keep without extension (current behavior)
+  } else {
+    // Default behavior - add the original extension
+    const originalExt = path.extname(modulePath)
+    specifier += originalExt
+  }
+  return specifier
 }
 
 /**
@@ -244,5 +288,6 @@ module.exports = {
   filterNamedImportEntries,
   isAutoCompletablePosition,
   getCompletionEntryDetails,
-  getCodeFixActionByName
+  getCodeFixActionByName,
+  getModuleSpceifier
 }
