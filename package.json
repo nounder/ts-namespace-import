@@ -1,0 +1,13 @@
+{
+  "name": "ts-namespace-import",
+  "main": "index.js",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "tsutils": "^3.21.0"
+  }
+}
