@@ -38,6 +38,11 @@ interface PluginOptions {
    * @default {undefined} (uses original filename)
    */
   nameTransform?: "PascalCase" | "camelCase"
+
+  /** Only suggest namespace-importing files that start with a capital letter
+   * @default {false}
+   */
+  capitalizedFilesOnly?: boolean
 }
 ```
 

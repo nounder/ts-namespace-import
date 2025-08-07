@@ -9,6 +9,7 @@ const tsutils = require("tsutils")
  * @property {readonly string[]} [paths]
  * @property {boolean} [ignoreNamedExport]
  * @property {"PascalCase" | "camelCase"} [nameTransform]
+ * @property {boolean} [capitalizedFilesOnly]
 
  */
 
@@ -141,7 +142,15 @@ function getModulePathsToImport(options, project) {
 
   const filteredPaths = modulePaths.filter((filePath) => {
     const basename = getFileNameWithoutExt(filePath)
-    return !basename.includes('.')
+    if (basename.includes('.')) {
+      return false
+    }
+    
+    if (options.capitalizedFilesOnly) {
+      return /^[A-Z]/.test(basename)
+    }
+    
+    return true
   })
 
   return [...new Set(filteredPaths)]
