@@ -12,14 +12,30 @@ Great for Effect code.
 
 ## Features
 
-- **Auto-completion for namespace imports**: Start typing a module name and get completion suggestions for namespace imports
-- **Filters test and utility files**: Excludes files with dots in their basename (e.g., `StateMachine.test.ts`, `utils.helper.js`) from autocomplete suggestions
-- **Respects TypeScript compiler options**: Properly handles `importModuleSpecifierEnding` settings:
-  - When set to `"js"`: Uses actual file extensions (`.ts`, `.tsx`, `.jsx`, etc.) in import specifiers
-  - When set to `"minimal"`: Omits file extensions from import specifiers
-  - Default behavior: Includes file extensions in import specifiers
-- **Smart path resolution**: Works with both relative imports and `baseUrl` configurations
-- **Fallback support**: Uses TypeScript's internal module resolution APIs when available, with reliable fallback logic
+- Auto-completion for namespace imports.
+- Filters test and utility files: no `.test.ts`.
+- Sensible sorting: ie. namespace imports appear before named imports.
+- Selected exported symbols from auto-complete will create namespace imports instead of named imports
+- Properly handles `importModuleSpecifierEnding` settings
+- Works with both relative imports and `baseUrl` configurations
+
+## Configuration
+
+```typescript
+interface PluginOptions {
+  /** Narrow down modules that should be automatically namespace-imported */
+  paths?: readonly string[]
+
+  /** Ignore named exports from specified paths in autocomplete */
+  ignoreNamedExport?: boolean
+
+  /** Transform module names: "PascalCase" (StateMachine) or "camelCase" (stateMachine) */
+  nameTransform?: "PascalCase" | "camelCase"
+
+  /** Convert selected exported symbols to namespace imports instead of named imports */
+  namespaceNamedExports?: boolean
+}
+```
 
 ## Acknowledgement
 
