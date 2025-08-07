@@ -3,7 +3,7 @@
 Start typing `StateMach` and you will see import auto-completion for importing module with this prefix as a namespace:
 
 ```ts
-import * as StateMachine from "StateMachine"
+import * as StateMachine from "states/StateMachine.ts"
 ```
 
 No more barrel modules and manual typing!
@@ -19,6 +19,33 @@ Great for Effect code.
 - Properly handles `importModuleSpecifierEnding` settings
 - Works with both relative imports and `baseUrl` configurations
 
+## Installation
+
+Install using your favorite package manager:
+
+```sh
+npm add -D nounder/ts-namespace-import
+```
+
+(You can specify version or a commit by adding `#2405694` or `#v0.1.0`)
+
+And add the plugin to `tsconfig.json`:
+
+```json
+{
+  "compilerOptions": {
+    "plugins": [
+      {
+        "name": "ts-namespace-import",
+        "options": {
+          "capitalizedFilesOnly": true
+        }
+      }
+    ]
+  }
+}
+```
+
 ## Configuration
 
 ```typescript
@@ -29,17 +56,20 @@ interface PluginOptions {
    */
   paths?: readonly string[]
 
-  /** Ignore named exports from specified paths in autocomplete
+  /**
+   * Ignore named exports from specified paths in autocomplete
    * @default {false}
    */
   ignoreNamedExport?: boolean
 
-  /** Transform module names based on filename
+  /**
+   * Transform module names based on filename
    * @default {undefined} (uses original filename)
    */
   nameTransform?: "PascalCase" | "camelCase"
 
-  /** Only suggest namespace-importing files that start with a capital letter
+  /**
+   * Only suggest namespace-importing files that start with a capital letter
    * @default {false}
    */
   capitalizedFilesOnly?: boolean
