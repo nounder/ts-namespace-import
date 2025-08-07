@@ -8,7 +8,8 @@ const tsutils = require("tsutils")
  * @typedef {Object} PluginOptions
  * @property {readonly string[]} paths
  * @property {boolean} [ignoreNamedExport]
- * @property {"upperCamelCase" | "lowerCamelCase"} [nameTransform]
+ * @property {"PascalCase" | "camelCase"} [nameTransform]
+ * @property {boolean} [namespaceNamedExports]
  */
 
 /**
@@ -253,20 +254,20 @@ function getCodeFixActionFromPath(name, selfPath, modulePath, project) {
  */
 function transformImportName(name, options) {
   if (options.nameTransform) {
-    return camelCase(name, { pascalCase: options.nameTransform === "upperCamelCase" })
+    return stringCase(name, { pascalCase: options.nameTransform === "PascalCase" })
   } else {
     return name
   }
 }
 
 /**
- * Simple camelCase implementation
+ * Simple string case transformation implementation
  * @param {string} str
  * @param {Object} [options]
  * @param {boolean} [options.pascalCase=false]
  * @returns {string}
  */
-function camelCase(str, options = {}) {
+function stringCase(str, options = {}) {
   const words = str
     .replace(/[^a-zA-Z0-9]/g, " ")
     .split(/\s+/)
@@ -289,5 +290,8 @@ module.exports = {
   isAutoCompletablePosition,
   getCompletionEntryDetails,
   getCodeFixActionByName,
-  getModuleSpceifier
+  getModuleSpceifier,
+  getModulePathsToImport,
+  getFileNameWithoutExt,
+  transformImportName
 }

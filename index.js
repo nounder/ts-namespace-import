@@ -73,6 +73,29 @@ function init() {
       data
     ) => {
       log("getCompletionEntryDetails", { fileName, position, name, options, source })
+      
+      // Check if we should convert named exports to namespace imports
+      if (info.config.options.namespaceNamedExports && source && !data?.modulePath) {
+        const modulePaths = namespaceImportPlugin.getModulePathsToImport(info.config.options, info.project)
+        const matchingModule = modulePaths.find(modulePath => {
+          const moduleBasename = namespaceImportPlugin.getFileNameWithoutExt(modulePath)
+          return source.includes(moduleBasename) || modulePath.includes(source)
+        })
+        
+        if (matchingModule) {
+          const namespaceName = namespaceImportPlugin.transformImportName(
+            namespaceImportPlugin.getFileNameWithoutExt(matchingModule),
+            info.config.options
+          )
+          return namespaceImportPlugin.getCompletionEntryDetails(
+            namespaceName,
+            fileName,
+            matchingModule,
+            info
+          )
+        }
+      }
+      
       if (data?.modulePath == null) {
         return getCompletionEntryDetails(
           fileName,
