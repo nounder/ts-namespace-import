@@ -9,7 +9,7 @@ const tsutils = require("tsutils")
  * @property {readonly string[]} [paths]
  * @property {boolean} [ignoreNamedExport]
  * @property {"PascalCase" | "camelCase"} [nameTransform]
- * @property {boolean} [namespaceNamedExports]
+
  */
 
 /**
