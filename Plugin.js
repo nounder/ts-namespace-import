@@ -133,23 +133,34 @@ function getModulePathsToImport(options, project) {
   if (options.paths && options.paths.length > 0) {
     // Use specified paths
     modulePaths = options.paths.flatMap((dirPath) => {
-      return project.readDirectory(path.resolve(currentDir, dirPath), [".ts", ".js"])
+      return project.readDirectory(path.resolve(currentDir, dirPath), [
+        ".ts",
+        ".tsx",
+        ".js",
+        ".jsx"
+      ])
     })
   } else {
     // Default: scan entire project directory
-    modulePaths = project.readDirectory(currentDir, [".ts", ".js"], undefined, undefined, 10)
+    modulePaths = project.readDirectory(
+      currentDir,
+      [".ts", ".tsx", ".js", ".jsx"],
+      undefined,
+      undefined,
+      10
+    )
   }
 
   const filteredPaths = modulePaths.filter((filePath) => {
     const basename = getFileNameWithoutExt(filePath)
-    if (basename.includes('.')) {
+    if (basename.includes(".")) {
       return false
     }
-    
+
     if (options.capitalizedFilesOnly) {
       return /^[A-Z]/.test(basename)
     }
-    
+
     return true
   })
 
@@ -184,7 +195,7 @@ function getModuleSpceifier(selfPath, modulePath, project) {
   const compilerOptions = project.getCompilerOptions()
   const program = project.getLanguageService().getProgram()
   const importingSourceFile = program?.getSourceFile(selfPath)
-  
+
   // Use TypeScript's internal API with the project's actual host
   if (importingSourceFile && project.projectService?.host) {
     try {
@@ -209,14 +220,14 @@ function getModuleSpceifier(selfPath, modulePath, project) {
   } else {
     const selfDir = path.dirname(selfPath)
     const relativePath = path.relative(selfDir, modulePath)
-    specifier = relativePath.startsWith('.') ? relativePath : './' + relativePath
+    specifier = relativePath.startsWith(".") ? relativePath : "./" + relativePath
     // Convert Windows paths to posix for import statements
-    specifier = specifier.replace(/\\/g, '/')
+    specifier = specifier.replace(/\\/g, "/")
   }
 
   // Remove the original extension
   specifier = getFilePathWithoutExt(specifier)
-  
+
   // Apply importModuleSpecifierEnding if specified
   if (compilerOptions.importModuleSpecifierEnding === "js") {
     // Use the actual file extension when importModuleSpecifierEnding is "js"
