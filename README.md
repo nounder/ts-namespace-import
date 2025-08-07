@@ -23,17 +23,21 @@ Great for Effect code.
 
 ```typescript
 interface PluginOptions {
-  /** Narrow down modules that should be automatically namespace-imported */
+  /**
+   * Narrow down modules that should be automatically namespace-imported
+   * @default {undefined} (project files)
+   */
   paths?: readonly string[]
 
-  /** Ignore named exports from specified paths in autocomplete */
+  /** Ignore named exports from specified paths in autocomplete
+   * @default {false}
+   */
   ignoreNamedExport?: boolean
 
-  /** Transform module names: "PascalCase" (StateMachine) or "camelCase" (stateMachine) */
+  /** Transform module names based on filename
+   * @default {undefined} (uses original filename)
+   */
   nameTransform?: "PascalCase" | "camelCase"
-
-  /** Convert selected exported symbols to namespace imports instead of named imports */
-  namespaceNamedExports?: boolean
 }
 ```
 
