@@ -27,7 +27,7 @@ function getCompletionEntries(info) {
       name: name,
       kind: ScriptElementKind.alias,
       source: modulePath,
-      sortText: name,
+      sortText: "0" + name,
       hasAction: true,
       isImportStatementCompletion: true,
       data: {
