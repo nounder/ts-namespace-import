@@ -152,6 +152,10 @@ function getModulePathsToImport(options, project) {
   }
 
   const filteredPaths = modulePaths.filter((filePath) => {
+    if (filePath.includes("/node_modules/")) {
+      return false
+    }
+
     const basename = getFileNameWithoutExt(filePath)
     if (basename.includes(".")) {
       return false
