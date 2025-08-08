@@ -29,7 +29,7 @@ function getCompletionEntries(info) {
       name: name,
       kind: ScriptElementKind.alias,
       source: modulePath,
-      sortText: "0" + name,
+      sortText: "16" + name, // Lower priority than local symbols (TS uses 11-15 for locals)
       hasAction: true,
       isImportStatementCompletion: true,
       data: {
